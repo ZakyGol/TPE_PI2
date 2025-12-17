@@ -1,15 +1,22 @@
-COMPILER=gcc
-OUTPUT_FILE=
-FRONT=
+CC = gcc
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -fsanitize=address -g
 
-all: programa clean
+INCLUDES = -Ifrontend -Ibackend -Ifrontend/CTable
 
-programa: $(FRONT) htmlTable.o
-	$(COMPILER) -o $(OUTPUT_FILE) $(FRONT) 
+SRC = \
+	frontend/main.c \
+	frontend/lector.c \
+	frontend/writer.c \
+	frontend/CTable/ctable.c \
+	backend/cityData.c
 
+all: cityServicesNYC cityServicesCHI
 
-htmlTable.o: htmlTable.c
-	$(COMPILER) -c htmlTable.c
+cityServicesNYC:
+	$(CC) $(CFLAGS) $(INCLUDES) -DCITY_NYC $(SRC) -o cityServicesNYC
+
+cityServicesCHI:
+	$(CC) $(CFLAGS) $(INCLUDES) -DCITY_CHICAGO $(SRC) -o cityServicesCHI
 
 clean:
-	rm -f *.o
+	rm -f cityServicesNYC cityServicesCHI
