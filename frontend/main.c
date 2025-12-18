@@ -23,22 +23,23 @@ int main(int argc, char *argv[]) {
 
     int yearFrom = -1, yearTo = -1;
 
-    if (argc >= 4) {
+    if (argc == 4) {
         yearFrom = atoi(argv[3]); //convierte el argumento a numero
         if (yearFrom <= 0) {
             fprintf(stderr, "Invalid yearFrom\n");
             return 1;
         }
-        yearTo = yearFrom;
+        yearTo = -1; //es de ese año en adelante
     }
 
     if (argc == 5) {
+        yearFrom = atoi(argv[3]);
         yearTo = atoi(argv[4]);
-        if (yearTo < yearFrom) {
+        if (yearFrom <= 0 || yearTo <= 0 || yearTo < yearFrom) {
             fprintf(stderr, "Invalid year range\n");
             return 1;
-        }
-    }
+        }   
+    }   
 
     /* Backend */
     queryADT queries = newQueries();
