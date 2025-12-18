@@ -109,11 +109,12 @@ int readTypes(const char *filename, typevector types){
             types->size++;
             }
         }
-    if (types->size < capacity) {
-    struct typeCDT *new_arr = realloc(types->arr, types->size * sizeof(struct typeCDT));
-    if (new_arr != NULL) {  // Solo reasignar si es distinto a NULL
-        types->arr = new_arr;
-    }
+    if (types->size == 0) {
+        free(types->arr);
+        types->arr = NULL;
+    } else if (types->size < capacity) {
+        struct typeCDT *new_arr = realloc(types->arr, types->size * sizeof(struct typeCDT));
+        if (new_arr != NULL) types->arr = new_arr;
     }
     qsort(types->arr, types->size, sizeof(struct typeCDT), compareTypes);
     fclose(file);
@@ -164,7 +165,7 @@ int readRequest(const char *filename, typevector types, queryADT q){
         code = strtok(NULL, DELIMITER);
         if (!code) continue;
 
-        idx = binarysearchIdx(types, code);
+        idx = binarySearchIdx(types, code);
         if (idx == -1) continue; // si idx es -1, no es un reclamo valido
 
         status = strtok(NULL, DELIMITER);
@@ -185,7 +186,7 @@ int readRequest(const char *filename, typevector types, queryADT q){
         code = strtok(line, DELIMITER);
         if (code==NULL) continue; //si da NULL significa que no hay mas tokens para leer en el reclamo
 
-        idx = binarysearchIdx(types, code);
+        idx = binarySearchIdx(types, code);
         if (idx == -1) continue; // si idx es -1, no es un reclamo valido
 
         agency = strtok(NULL, DELIMITER);
