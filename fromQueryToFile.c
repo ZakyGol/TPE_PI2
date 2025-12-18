@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "htmlTable.h"
+#include "queries.h"
 #include "fromQueryToFile.h"
+
 static void q1ToFile(const TList q1, const char *csvFile, const char *htmlFile){
     if (q1 == NULL){
         return;
