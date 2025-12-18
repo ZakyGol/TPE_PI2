@@ -13,7 +13,7 @@ static void usage(const char *prog) {
 
 int main(int argc, char *argv[]) {
 
-    if (argc != 3 && argc != 4 && argc != 5) {
+    if (argc < 3 || argc > 5) {
         usage(argv[0]);
         return 1;
     }
@@ -71,12 +71,12 @@ int main(int argc, char *argv[]) {
     }
 
     /* Output */
-    if (!writeAllQueries(queries)) {
-        fprintf(stderr, "Error writing output files\n");
-        freeTypes(types);
-        freeQueries(queries);
-        return 1;
-    }
+    queriesToFile(queries,
+              "q1.csv", "q1.html",
+              "q2.csv", "q2.html",
+              "q3.csv", "q3.html",
+              "q4.csv", "q4.html",
+              "q5.csv", "q5.html");
 
     freeTypes(types);
     freeQueries(queries);
