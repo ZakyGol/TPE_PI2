@@ -181,7 +181,7 @@ static q3List addToQ3(q3List q3, int quadLat, int quadLong, char *code){
         return new;
     }
     if(c==0){
-        for(int i=0;i<q3->dim;i++){
+        for(size_t i=0;i<q3->dim;i++){
             if(strcmp(q3->codes[i],code)==0)
                 return q3;
         }
@@ -309,7 +309,7 @@ void freeQ3(q3List q3){
     while(q3!=NULL){
         q3List aux=q3;
         q3=q3->next;
-        for(int i=0;i<aux->dim;i++){
+        for(size_t i=0;i<aux->dim;i++){
             free(aux->codes[i]);
         }
         free(aux->codes);
