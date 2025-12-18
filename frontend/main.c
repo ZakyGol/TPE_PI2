@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     int yearFrom = -1, yearTo = -1;
 
     if (argc >= 4) {
-        yearFrom = atoi(argv[3]);
+        yearFrom = atoi(argv[3]); //convierte el argumento a numero
         if (yearFrom <= 0) {
             fprintf(stderr, "Invalid yearFrom\n");
             return 1;

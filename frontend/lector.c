@@ -138,7 +138,7 @@ void freeTypes(typevector types) {
     
     free(types);
 }
-int readRequest(const char *filename, typevector types, queryADT q){
+int readRequest(const char *filename, typevector types, queryADT q, int yearFrom, int yearTo){
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         fprintf(stderr, "Error: No se pudo abrir el archivo %s\n", filename);
@@ -214,7 +214,7 @@ int readRequest(const char *filename, typevector types, queryADT q){
         sscanf(date, "%d-%d-%d %d:%*d:%*d", &year, &month, &day, &hour);
         quadLat = (int)(atof(latitud)*10);
         quadLong =(int) (atof(longitud)*10);
-        addToQueries(q, agency, code, status, borough, year, month, hour, day, quadLat, quadLong);
+        addToQueries(q, agency, code, status, borough, year, month, day, hour, quadLat, quadLong, yearFrom, yearTo);
     }
     fclose(file);
     return 1;

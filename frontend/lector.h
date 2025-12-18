@@ -18,5 +18,5 @@ void freeTypes(typevector types);
 /*  Leo los reclamos del archivo filename, 
     los comparo con los tipos de reclamo y 
     los añado a las estuctura de las queries*/
-int readRequest(const char *filename, typevector types, queryADT q);
+int readRequest(const char *filename, typevector types, queryADT q, int yearFrom, int yearTo);
 #endif
