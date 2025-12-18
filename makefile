@@ -1,22 +1,50 @@
 CC = gcc
-CFLAGS = -std=c99 -Wall -Wextra -pedantic -fsanitize=address -g
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -g -fsanitize=address
+LDFLAGS = -fsanitize=address
+LDLIBS = -lm
 
-INCLUDES = -Ifrontend -Ibackend -Ifrontend/CTable
+NYC = cityServicesNYC
+CHI = cityServicesCHI
 
-SRC = \
-	frontend/main.c \
-	frontend/lector.c \
-	frontend/writer.c \
-	frontend/CTable/ctable.c \
-	backend/cityData.c
+SRC = main.c \
+      lector.c \
+      fromQueryToFile.c \
+      queries.c \
+      htmlTable.c
 
-all: cityServicesNYC cityServicesCHI
+OBJ_NYC = $(SRC:.c=.nyc.o)
+OBJ_CHI = $(SRC:.c=.chi.o)
 
-cityServicesNYC:
-	$(CC) $(CFLAGS) $(INCLUDES) -DCITY_NYC $(SRC) -o cityServicesNYC
+all: nyc chicago
 
-cityServicesCHI:
-	$(CC) $(CFLAGS) $(INCLUDES) -DCITY_CHICAGO $(SRC) -o cityServicesCHI
+nyc: $(NYC)
+
+chicago: $(CHI)
+
+$(NYC): $(OBJ_NYC)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+$(CHI): $(OBJ_CHI)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+# ✅ REGLAS EXPLÍCITAS (la clave)
+frontend/%.nyc.o: frontend/%.c
+	$(CC) $(CFLAGS) -DCITY_NYC -c $< -o $@
+
+backend/%.nyc.o: backend/%.c
+	$(CC) $(CFLAGS) -DCITY_NYC -c $< -o $@
+
+%.nyc.o: %.c
+	$(CC) $(CFLAGS) -DCITY_NYC -c $< -o $@
+
+frontend/%.chi.o: frontend/%.c
+	$(CC) $(CFLAGS) -DCITY_CHICAGO -c $< -o $@
+
+backend/%.chi.o: backend/%.c
+	$(CC) $(CFLAGS) -DCITY_CHICAGO -c $< -o $@
+
+%.chi.o: %.c
+	$(CC) $(CFLAGS) -DCITY_CHICAGO -c $< -o $@
 
 clean:
-	rm -f cityServicesNYC cityServicesCHI
+	rm -f $(NYC) $(CHI) $(OBJ_NYC) $(OBJ_CHI)
