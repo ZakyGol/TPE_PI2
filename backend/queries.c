@@ -270,7 +270,9 @@ static void accQ5(q5List q5, int quadLat, int quadLong, int year, int month){ //
         q5=q5->next;
     }
 }
-void addToQueries(queryADT q,const char * agency, const char * code, const char * name, const char * status, const char * borough, int year, int month, int day, int hour, int quadLat, int quadLong, int yMax, int yMin){
+void addToQueries(queryADT q,const char * agency, const char * code, const char * name, const char * status, const char * borough, 
+                    int year, int month, int day, int hour, 
+                    int quadLat, int quadLong, int yMax, int yMin){
     int isClosed=strcmp(status,CERRADO)==0;
     q->q1=addToQ1(q->q1,borough,name);
     if(isClosed){
