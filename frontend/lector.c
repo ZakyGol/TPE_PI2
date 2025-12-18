@@ -214,7 +214,7 @@ int readRequest(const char *filename, typevector types, queryADT q, int yearFrom
         sscanf(date, "%d-%d-%d %d:%*d:%*d", &year, &month, &day, &hour);
         quadLat = (int)(atof(latitud)*10);
         quadLong =(int) (atof(longitud)*10);
-        addToQueries(q, agency, code, status, borough, year, month, day, hour, quadLat, quadLong, yearFrom, yearTo);
+        addToQueries(q, agency, code, types->arr[idx].name, status, borough, year, month, day, hour, quadLat, quadLong, yearFrom, yearTo);
     }
     fclose(file);
     return 1;
