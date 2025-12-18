@@ -16,7 +16,7 @@ struct typevectorCDT{
 };
 
 
-typevector newType(){
+typevector newType(void){
     return calloc(1, sizeof(struct typevectorCDT));
 }
 static char* removeLast(char *str, int len) {
