@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "htmlTable.h"
+#include "../htmlTable.h"
 #include "../backend/queries.h" 
 #include "fromQueryToFile.h"
 
