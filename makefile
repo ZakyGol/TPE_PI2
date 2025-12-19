@@ -6,10 +6,10 @@ LDLIBS = -lm
 NYC = cityServicesNYC
 CHI = cityServicesCHI
 
-SRC = frontend/main.c \
+SRC = frontend/cityServices.c \
       frontend/lector.c \
-      frontend/fromQueryToFile.c \
-      frontend/htmlTable.c \
+      frontend/fromQueryToFil.c \
+      htmlTable.c \
       backend/queries.c
 
 OBJ_NYC = $(SRC:.c=.nyc.o)
