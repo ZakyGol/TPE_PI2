@@ -20,8 +20,8 @@ struct q2Node {
 typedef struct latLongs{
     int quadLong;
     char **codes;
-    size_t dim;
-    size_t size;
+    unsigned int dim;
+    unsigned int size;
     struct latLongs *next;
 }*listLatLongs;
 struct q3Node {
@@ -178,7 +178,7 @@ static listLatLongs addLong(listLatLongs lista, int quadLong, const char *code){
         return new;
     }
     if(c==0){
-        for(size_t i=0;i<lista->dim;i++){
+        for(unsigned int i=0;i<lista->dim;i++){
             if(strcmp(lista->codes[i],code)==0)
                 return lista;
         }
@@ -400,8 +400,56 @@ void addToQueries(queryADT q,const char * agency, const char * code, const char 
         }
     }
 }
+
+void q1_foreach(queryADT q, Q1Visitor v, void *userData){
+    for(q1List b = q->q1; b != NULL; b = b->next){
+        for(listBType t = b->firstType; t != NULL; t = t->next){
+            v(b->borough, t->type, t->count, userData);
+        }
+    }
+}
+
+void q2_foreach(queryADT q, Q2Visitor v, void *userData){
+    for(q2List b=q->q2; b!=NULL; b=b->next){
+        for(int i=0;i<HOURS;i++){
+            v(b->borough,i,b->count[i],userData);
+        }
+    }
+}
+
+void q3_foreach(queryADT q, Q3Visitor v, void *userData){
+    for(q3List lat=q->q3; lat!=NULL; lat=lat->next){
+        for(listLatLongs lon=lat->firstLong; lon!=NULL; lon=lon->next){
+            v(lat->quadLat,lon->quadLong,lon->dim,userData);
+        }
+    }
+}
+
+void q4_foreach(queryADT q, Q4Visitor v, void *userData){
+    for(q4List b=q->q4; b!=NULL; b=b->next){
+        for(listBorAg a=b->firstAgency; a!=NULL; a=a->next){
+            for(listAgTy t=a->firstType;t!=NULL;t=t->next){
+                v(b->borough,a->agency,t->type,(t->recDay-t->oldDay),userData);
+            }
+        }
+    }
+}
+
+void q5_foreach(queryADT q, Q5Visitor v, void *userData){
+    for(q5List lat=q->q5;lat!=NULL;lat=lat->next){
+        for(listLatLongs5 lon=lat->firstLong;lon!=NULL;lon=lon->next){
+            for(listQuadYear y=lon->firstYear;y!=NULL;y=y->next){
+                int YTD=0;
+                for(listQuadYearMonth m=y->firstMonth;m!=NULL;m=m->next){
+                    YTD+=m->recYTD;
+                    v(lat->quadLat,lon->quadLong,y->year,m->month,YTD,userData);
+                }
+            }
+        }
+    }
+}
 static void freeBTypes(listBType t){
-    while(t){
+    while(t!=NULL){
         listBType aux = t->next;
         free(t->type);
         free(t);
@@ -409,7 +457,7 @@ static void freeBTypes(listBType t){
     }
 }
 static void freeQ1(q1List q1){
-    while(q1){
+    while(q1!=NULL){
         q1List aux = q1->next;
         free(q1->borough);
         freeBTypes(q1->firstType);
@@ -418,7 +466,7 @@ static void freeQ1(q1List q1){
     }
 }
 static void freeQ2(q2List q2){
-    while(q2){
+    while(q2!=NULL){
         q2List aux = q2->next;
         free(q2->borough);
         free(q2);
@@ -426,9 +474,9 @@ static void freeQ2(q2List q2){
     }
 }
 static void freeLatLongs(listLatLongs l){
-    while(l){
+    while(l!=NULL){
         listLatLongs aux = l->next;
-        for(size_t i = 0; i < l->dim; i++)
+        for(unsigned int i = 0; i < l->dim; i++)
             free(l->codes[i]);
         free(l->codes);
         free(l);
@@ -436,7 +484,7 @@ static void freeLatLongs(listLatLongs l){
     }
 }
 static void freeQ3(q3List q3){
-    while(q3){
+    while(q3!=NULL){
         q3List aux = q3->next;
         freeLatLongs(q3->firstLong);
         free(q3);
@@ -444,7 +492,7 @@ static void freeQ3(q3List q3){
     }
 }
 static void freeAgTypes(listAgTy t){
-    while(t){
+    while(t!=NULL){
         listAgTy aux = t->next;
         free(t->type);
         free(t);
@@ -452,7 +500,7 @@ static void freeAgTypes(listAgTy t){
     }
 }
 static void freeBorAg(listBorAg a){
-    while(a){
+    while(a!=NULL){
         listBorAg aux = a->next;
         free(a->agency);
         freeAgTypes(a->firstType);
@@ -461,7 +509,7 @@ static void freeBorAg(listBorAg a){
     }
 }
 static void freeQ4(q4List q4){
-    while(q4){
+    while(q4!=NULL){
         q4List aux = q4->next;
         free(q4->borough);
         freeBorAg(q4->firstAgency);
@@ -470,14 +518,14 @@ static void freeQ4(q4List q4){
     }
 }
 static void freeMonths(listQuadYearMonth m){
-    while(m){
+    while(m!=NULL){
         listQuadYearMonth aux=m->next;
         free(m);
         m=aux;
     }
 }
 static void freeYears(listQuadYear y){
-    while(y){
+    while(y!=NULL){
         listQuadYear aux = y->next;
         freeMonths(y->firstMonth);
         free(y);
@@ -485,7 +533,7 @@ static void freeYears(listQuadYear y){
     }
 }
 static void freeLongs5(listLatLongs5 l){
-    while(l){
+    while(l!=NULL){
         listLatLongs5 aux = l->next;
         freeYears(l->firstYear);
         free(l);
@@ -493,7 +541,7 @@ static void freeLongs5(listLatLongs5 l){
     }
 }
 static void freeQ5(q5List q5){
-    while(q5){
+    while(q5!=NULL){
         q5List aux = q5->next;
         freeLongs5(q5->firstLong);
         free(q5);
@@ -503,12 +551,10 @@ static void freeQ5(q5List q5){
 void freeQueries(queryADT q){
     if(q == NULL)
         return;
-
     freeQ1(q->q1);
     freeQ2(q->q2);
     freeQ3(q->q3);
     freeQ4(q->q4);
     freeQ5(q->q5);
-
     free(q);
 }
