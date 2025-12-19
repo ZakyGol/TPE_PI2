@@ -1,0 +1,40 @@
+Trabajo práctico final de PI
+
+Integrantes del proyecto: Isaac Mizraji (66801), Manuel Burgos Bernasconi (67137)
+
+Archivos:
+
+Directorios:
+Backend - Contiene la implementación de la lógica del sistema y el procesamiento de las consultas.
+Frontend - Contiene el código encargado de la lectura de archivos de entrada y la generación de archivos de salida.
+
+Backend
+queries - Implementación del backend. Maneja el almacenamiento de los reclamos y el cálculo de las consultas solicitadas.
+
+Frontend
+main - Programa principal. Procesa los parámetros recibidos por línea de comandos y coordina la ejecución general.
+lector - Lectura y parseo de los archivos CSV de reclamos y tipos de reclamos.
+fromQueryToFile - Generación de archivos CSV y HTML a partir de los resultados de las consultas.
+htmlTable - Funciones auxiliares para la generación de tablas HTML (proveída por la cátedra)
+
+Compilación
+El proyecto se compila utilizando make.
+Para compilar ambas ciudades, escribiendo solamente make se compila para ambas (NYC y CHI)
+Para compilar la versión correspondiente a New York City:
+make nyc
+
+Para compilar la versión correspondiente a Chicago:
+make chicago
+
+Estos comandos generan los ejecutables:
+cityServicesNYC
+cityServicesCHI
+
+Ejecución:
+Escribiendo ./nombreEjecutable reclamos.csv tipos.csv ya ejecuta el programa. 
+Si se escribe 
+./nombreEjecutable reclamos.csv tipos.csv yearSince yearTo 
+siendo yearSince y yearTo números enteros que representan el principio y el final de un rango de años
+
+Si se escribe 
+./nombreEjecutable reclamos.csv tipos.csv yearSince ejecuta desde ese año hasta el actual. 
