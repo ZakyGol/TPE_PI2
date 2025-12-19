@@ -24,6 +24,14 @@ q4List getQ4(queryADT q);
 q5List getQ5(queryADT q);
 
 queryADT newQueries(void);
-void addToQueries(queryADT q,const char * agency, const char * code, const char *name, const char * status, const char * borough, int year, int month, int day, int hour, double lat, double lon, int yMax, int yMin);
+void addToQueries(queryADT q,
+                  const char *agency,
+                  const char *code,
+                  const char *typeName,
+                  const char *status,
+                  const char *borough,
+                  int year, int month, int day, int hour,
+                  double lat, double lon,
+                  int yMax, int yMin);
 void freeQueries(queryADT q);
 #endif
