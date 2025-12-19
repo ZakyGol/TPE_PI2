@@ -30,6 +30,9 @@ Estos comandos generan los ejecutables:
 cityServicesNYC
 cityServicesCHI
 
+Para eliminar los archivos .o que se generan con el make, se hace make clean CITY=XXX (siendo XXX= CHI O NYC)
+Para eliminar todos los archivos que se generan con el make, se hace make distclean CITY=XXX (siendo XXX= CHI O NYC)
+
 Ejecución:
 Escribiendo ./nombreEjecutable reclamos.csv tipos.csv ya ejecuta el programa. 
 Si se escribe 
