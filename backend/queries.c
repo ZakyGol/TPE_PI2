@@ -442,7 +442,7 @@ void q5_foreach(queryADT q, Q5Visitor v, void *userData){
             for(listQuadYear y=lon->firstYear;y!=NULL;y=y->next){
                 int YTD=0;
                 for(listQuadYearMonth m=y->firstMonth;m!=NULL;m=m->next){
-                    YTD+=m->recYTD;
+                    YTD+=m->recYTD;                                                 //con la variable YTD vas acumulando los reclamos del año para cada mes
                     v(lat->quadLat,lon->quadLong,y->year,m->month,YTD,userData);
                 }
             }
