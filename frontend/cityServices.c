@@ -1,42 +1,46 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
-
-#include "lector.h"
-#include "../backend/queries.h" 
-#include "fromQueryToFile.h"
+#include "queries.c"
+#include "lector.c"
+#include "fromQueryToFile.c"
+#define YEAR_MIN_DEFAULT 1900
+#define YEAR_MAX_DEFAULT 2100
 
 static void usage(const char *prog) {
     fprintf(stderr,
         "Usage:\n"
-        "  %s requests.csv types.csv [yearFrom] [yearTo]\n", prog);
+        "  %s requests.csv types.csv [yMin] [yMax]\n", prog);
 }
 
 int main(int argc, char *argv[]) {
 
     if (argc < 3 || argc > 5) {
-        usage(argv[0]);
+        fprintf(stderr, "Uso: %s <archivo_reclamos> <archivo_tipos>\n", argv[0]);
         return 1;
     }
 
     const char *requestsPath = argv[1];
     const char *typesPath    = argv[2];
 
-    int yearFrom = -1, yearTo = -1;
+    int yMin, yMax;
+    yMin=YEAR_MIN_DEFAULT;
+    yMax=YEAR_MAX_DEFAULT;
 
     if (argc == 4) {
-        yearFrom = atoi(argv[3]); //convierte el argumento a numero
-        if (yearFrom <= 0) {
-            fprintf(stderr, "Invalid yearFrom\n");
+        yMin = atoi(argv[3]); //convierte el argumento a numero
+        if (yMin <= 0) {
+            fprintf(stderr, "Invalid yMin\n");
             return 1;
         }
-        yearTo = -1; //es de ese año en adelante
+        yMax = YEAR_MAX_DEFAULT; //es de ese año en adelante
     }
 
     if (argc == 5) {
-        yearFrom = atoi(argv[3]);
-        yearTo = atoi(argv[4]);
-        if (yearFrom <= 0 || yearTo <= 0 || yearTo < yearFrom) {
-            fprintf(stderr, "Invalid year range\n");
+        yMin = atoi(argv[3]);
+        yMax = atoi(argv[4]);
+        if (yMin <= 0 || yMax <= 0 || yMax < yMin) {
+            fprintf(stderr, "Error en el rango de años\n");
             return 1;
         }   
     }   
@@ -44,43 +48,44 @@ int main(int argc, char *argv[]) {
     /* Backend */
     queryADT queries = newQueries();
     if (!queries) {
-        fprintf(stderr, "Out of memory\n");
+        fprintf(stderr, "Error por falta de memoria\n");
         return 1;
     }
 
     /* Frontend: types */
     typevector types = newType();
     if (!types) {
-        fprintf(stderr, "Out of memory\n");
+        fprintf(stderr, "Error por falta de memoria\n");
         freeQueries(queries);
         return 1;
     }
 
     if (!readTypes(typesPath, types)) {
-        fprintf(stderr, "Error reading types file\n");
+        fprintf(stderr, "Error al leer los archivos de types\n");
         freeTypes(types);
         freeQueries(queries);
         return 1;
     }
 
-    /* Frontend: requests (una sola pasada) */
-    if (!readRequest(requestsPath, types, queries, yearFrom, yearTo)) {
-        fprintf(stderr, "Error reading requests file\n");
+    if (!readRequest(requestsPath, types, queries, yMin, yMax)) {
+        fprintf(stderr, "Error al leer los archivos de reclamos\n");
         freeTypes(types);
         freeQueries(queries);
         return 1;
     }
 
-    /* Output */
-    queriesToFile(queries,
-              "q1.csv", "q1.html",
-              "q2.csv", "q2.html",
-              "q3.csv", "q3.html",
-              "q4.csv", "q4.html",
-              "q5.csv", "q5.html");
-
+    if(!queriesToFile(queries,
+                    "query1.csv","query1.html",
+                    "query2.csv","query2.html",
+                    "query3.csv","query3.html",
+                    "query4.csv","query4.html",
+                    "query5.csv","query5.html")){
+        fprintf(stderr,"Error al exportar los archivos\n");
+        freeQueries(q);
+        freeTypes(types);
+    }
     freeTypes(types);
     freeQueries(queries);
 
     return 0;
-}
+}   
