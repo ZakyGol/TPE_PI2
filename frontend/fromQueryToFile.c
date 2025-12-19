@@ -1,8 +1,8 @@
 #include "fromQueryToFile.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "../back/queries.h"
-#include "../back/htmlTable.h"
+#include "../backend/queries.h"
+#include "../backend/htmlTable.h"
 typedef struct {
     FILE *csv;
     htmlTable html;
