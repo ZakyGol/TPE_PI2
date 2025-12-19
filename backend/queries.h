@@ -2,7 +2,7 @@
 #define __QUERIES_H__
 #if defined(CITY_NYC)
 #define CERRADO "Closed"
-#elif defined(CITY_CHICAGO)
+#elif defined(CITY_CHI)
 #define CERRADO "Completed"
 #else 
 #error "Debe definirse CITY_NYC O CITY_CHICAGO"
