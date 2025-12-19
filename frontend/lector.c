@@ -1,5 +1,5 @@
 #include "lector.h"
-#include "../backend/queries.h"
+#include "../back/queries.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -92,7 +92,7 @@ int readTypes(const char *filename, typevector types){
             types->arr[types->size].name = strdup(s1);
             types->arr[types->size].code=strdup(s2);
             #endif
-            #ifdef CITY_CHICAGO
+            #ifdef CITY_CHI
             types->arr[types->size].name=strdup(s2);
             types->arr[types->size].code=strdup(s1);
             #endif
@@ -181,7 +181,7 @@ int readRequest(const char *filename, typevector types, queryADT q, int yMax, in
         if (!longitud) continue;
 
 #endif
-#ifdef CITY_CHICAGO
+#ifdef CITY_CHI
 
         code = strtok(line, DELIMITER);
         if (code==NULL) continue; //si da NULL significa que no hay mas tokens para leer en el reclamo
