@@ -1,10 +1,8 @@
 #include "lector.h"
-#include "../backend/queries.h" 
-
+#include "queries.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 struct typeCDT{
     char *name;
     char *code;
@@ -16,7 +14,7 @@ struct typevectorCDT{
 };
 
 
-typevector newType(void){
+typevector newType(){
     return calloc(1, sizeof(struct typevectorCDT));
 }
 static char* removeLast(char *str, int len) {
@@ -111,12 +109,11 @@ int readTypes(const char *filename, typevector types){
             types->size++;
             }
         }
-    if (types->size == 0) {
-        free(types->arr);
-        types->arr = NULL;
-    } else if (types->size < capacity) {
-        struct typeCDT *new_arr = realloc(types->arr, types->size * sizeof(struct typeCDT));
-        if (new_arr != NULL) types->arr = new_arr;
+    if (types->size < capacity) {
+    struct typeCDT *new_arr = realloc(types->arr, types->size * sizeof(struct typeCDT));
+    if (new_arr != NULL) {  // Solo reasignar si es distinto a NULL
+        types->arr = new_arr;
+    }
     }
     qsort(types->arr, types->size, sizeof(struct typeCDT), compareTypes);
     fclose(file);
@@ -138,7 +135,7 @@ void freeTypes(typevector types) {
     
     free(types);
 }
-int readRequest(const char *filename, typevector types, queryADT q, int yearFrom, int yearTo){
+int readRequest(const char *filename, typevector types, queryADT q, int yMax, int yMin){
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         fprintf(stderr, "Error: No se pudo abrir el archivo %s\n", filename);
@@ -151,8 +148,9 @@ int readRequest(const char *filename, typevector types, queryADT q, int yearFrom
         fclose(file);
         return 0;
     }
-    int len, idx, year, month, day, hour, quadLat, quadLong;
-    char *date, *agency, *code, *status, *borough, *latitud, *longitud;
+    int idx, year, month, day, hour;
+    char *date, *agency, *code, *name, *status, *borough, *latitud, *longitud;
+    double lat, lon;
     // Leer línea por línea
     while (fgets(line, MAX_LINE, file) != NULL) {
 
@@ -210,11 +208,12 @@ int readRequest(const char *filename, typevector types, queryADT q, int yearFrom
         if (longitud==NULL) continue;
 
 #endif
+        name=types->arr[idx].name;
         longitud = removeLast(longitud, strlen(longitud));
+        lat=atof(latitud);
+        lon=atof(longitud);
         sscanf(date, "%d-%d-%d %d:%*d:%*d", &year, &month, &day, &hour);
-        quadLat = (int)(atof(latitud)*10);
-        quadLong =(int) (atof(longitud)*10);
-        addToQueries(q, agency, code, types->arr[idx].name, status, borough, year, month, day, hour, quadLat, quadLong, yearFrom, yearTo);
+        addToQueries(q, agency, code, name, status, borough, year, month, day, hour, lat, lon,yMax,yMin);
     }
     fclose(file);
     return 1;
