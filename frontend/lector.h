@@ -1,8 +1,5 @@
-#ifndef LECTOR_H
-#define LECTOR_H
-
-#include "../backend/queries.h" 
-
+#ifndef __LECTOR_H__
+#define __LECTOR_H__
 #define MAX_LINE 1024
 #define DELIMITER ";"
 #define BLOCK 250
@@ -15,8 +12,6 @@ typevector newType(void);
 int readTypes(const char *filename, typevector types);
 //libero la estuctura de tipos de reclamo
 void freeTypes(typevector types);
-/*  Leo los reclamos del archivo filename, 
-    los comparo con los tipos de reclamo y 
-    los añado a las estuctura de las queries*/
-int readRequest(const char *filename, typevector types, queryADT q, int yearFrom, int yearTo);
+// leo los reclamos del archivo filename, los comparo con los tipos de reclamo y los añado a las estuctura de las queries
+int readRequest(const char *filename, typevector types, queryADT q, int yMax, int yMin);
 #endif
