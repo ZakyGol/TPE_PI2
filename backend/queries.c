@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "queries.h"
 typedef struct boroughTypes{
     char *type;
@@ -384,8 +385,8 @@ void addToQueries(queryADT q,const char * agency, const char * code, const char 
     if((lat>90 || lat<-90)|| (lon>180 || lon<-180)|| (hour>23 || hour<0) || (month<1 || month>12))
         return; 
     int quadLat,quadLong;
-    quadLat=(int)(lat*10);
-    quadLong=(int)(lon*10);
+    quadLat=floor(lat*10);
+    quadLong=floor(lon*10);
     int isClosed=strcmp(status,CERRADO)==0;
     q->q1=addToQ1(q->q1,borough,type);
     if(isClosed){
@@ -393,7 +394,7 @@ void addToQueries(queryADT q,const char * agency, const char * code, const char 
     }
     if(strcmp(status,"Open")==0)
         q->q3=addToQ3(q->q3,quadLat,quadLong,code);
-    if(year>yMin && year<yMax){
+    if(year>=yMin && year<=yMax){
         q->q4=addToQ4(q->q4,borough,agency,type,days_from_civil(year,month,day));
         if(isClosed){
             q->q5=addToQ5(q->q5,quadLat,quadLong,year,month,0);

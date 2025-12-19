@@ -1,31 +1,27 @@
 CC = gcc
-CFLAGS = -std=c99 -Wall -Wextra -pedantic -g -fsanitize=address
+CFLAGS = -Wall -pedantic -std=c2x -g -fsanitize=address
+LDLIBS= -lm
 LDFLAGS = -fsanitize=address
-LDLIBS = -lm
+ifeq ($(CITY), NYC)
+CFLAGS+=-DCITY_NYC
+else ifeq ($(CITY), CHI)
+CFLAGS+=-DCITY_CHI
+else
+$(error Debe definir CITY=NYC o CITY=CHI)
+endif
+TARGET = cityServices$(CITY)
+SRC = ./front/cityServices.c \
+      ./front/lector.c \
+      ./back/queries.c \
+      ./front/fromQueryToFile.c \
+      ./back/htmlTable.c
 
-NYC = cityServicesNYC
-CHI = cityServicesCHI
+OBJ = $(SRC:.c=.o)
 
-SRC = frontend/cityServices.c \
-      frontend/lector.c \
-      frontend/fromQueryToFile.c \
-      htmlTable.c \
-      backend/queries.c
+all: $(TARGET)
 
-OBJ_NYC = $(SRC:.c=.nyc.o)
-OBJ_CHI = $(SRC:.c=.chi.o)
-
-all: nyc chi
-
-nyc: $(NYC)
-
-chi: $(CHI)
-
-$(NYC): $(OBJ_NYC)
-	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
-
-$(CHI): $(OBJ_CHI)
-	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+$(TARGET): $(OBJ)
+	$(CC) $(OBJ) -o $(TARGET) $(LDFLAGS) $(LDLIBS)
 
 %.nyc.o: %.c
 	$(CC) $(CFLAGS) -DCITY_NYC -c $< -o $@
@@ -34,4 +30,7 @@ $(CHI): $(OBJ_CHI)
 	$(CC) $(CFLAGS) -DCITY_CHI -c $< -o $@
 
 clean:
-	rm -f $(NYC) $(CHI) $(OBJ_NYC) $(OBJ_CHI)
+	rm -f *.o
+
+distclean: clean
+	rm -f $(TARGET)
