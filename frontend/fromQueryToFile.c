@@ -1,7 +1,7 @@
 #include "fromQueryToFile.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "../backend/queries.h"
+#include "queries.h"
 #include "../htmlTable.c"
 static int q1ToFile(q1List q1, const char *csvFile, const char *htmlFile){
     if (q1 == NULL){
@@ -23,7 +23,7 @@ static int q1ToFile(q1List q1, const char *csvFile, const char *htmlFile){
         aux=q1->firstType;
         while(aux!=NULL){
             char respToChar[10];  
-            snprintf(respToChar, "%d", aux->count);
+            sprintf(respToChar, "%d", aux->count);
             fprintf(csv, "%s;%s;%d\n", q1->borough, aux->type, aux->count);
             addHTMLRow(html, q1->borough, aux->type, respToChar);
             aux=aux->next;
@@ -53,8 +53,8 @@ static int q2ToFile(q2List q2, const char *csvFile, const char *htmlFile){
         char respToChar[10];
         char dayHour[4];
         for(int i=0;i<HOURS;i++){  
-            snprintf(respToChar, "%d", q2->count[i]);
-            snprintf(dayHour, "%d", i);
+            sprintf(respToChar, "%d", q2->count[i]);
+            sprintf(dayHour, "%d", i);
             fprintf(csv, "%s;%d;%d\n", q2->borough, i, q2->count[i]);
             addHTMLRow(html, q2->borough, dayHour, respToChar);
         }
@@ -87,9 +87,9 @@ static int q3ToFile(q3List q3, const char *csvFile, const char *htmlFile){
             char respToChar[10];
             char quadLong[5];
             char quadLat[5]; 
-            snprintf(respToChar, "%ld", aux->dim);
-            snprintf(quadLong, "%d", aux->quadLong);
-            snprintf(quadLat, "%d", q3->quadLat);
+            sprintf(respToChar, "%ld", aux->dim);
+            sprintf(quadLong, "%d", aux->quadLong);
+            sprintf(quadLat, "%d", q3->quadLat);
             fprintf(csv, "%d;%d;%ld\n", q3->quadLat, aux->quadLong, aux->dim);
             addHTMLRow(html, quadLat, quadLong, respToChar);
             aux=aux->next;
@@ -124,7 +124,7 @@ static int q4ToFile(q4List q4, const char *csvFile, const char *htmlFile){
             aux2=aux->firstType;
             while(aux2!=NULL){
                 char respToChar[10];
-                snprintf(respToChar, "%d", (aux2->recDay-aux2->oldDay));
+                sprintf(respToChar, "%d", (aux2->recDay-aux2->oldDay));
                 fprintf(csv, "%s;%s;%s;%d\n", q4->borough, aux->agency, aux2->type,(aux2->recDay-aux2->oldDay));
                 addHTMLRow(html, q4->borough, aux->agency, aux2->type, respToChar);
                 aux2=aux2->next;
@@ -171,11 +171,11 @@ static int q5ToFile(q5List q5, const char *csvFile, const char *htmlFile){
                     char year[5];
                     char quadLong[5];
                     char quadLat[5];
-                    snprintf(respToChar, "%d", YTD);
-                    snprintf(month, "%d", aux3->month);
-                    snprintf(year, "%d", aux2->year);
-                    snprintf(quadLong, "%d", aux->quadLong);
-                    snprintf(quadLat, "%d", q5->quadLat);
+                    sprintf(respToChar, "%d", YTD);
+                    sprintf(month, "%d", aux3->month);
+                    sprintf(year, "%d", aux2->year);
+                    sprintf(quadLong, "%d", aux->quadLong);
+                    sprintf(quadLat, "%d", q5->quadLat);
                     fprintf(csv, "%d;%d;%d;%d;%d\n", q5->quadLat, aux->quadLong, aux2->year, aux3->month,YTD);
                     addHTMLRow(html, quadLat, quadLong, year, month, respToChar);
                     aux3=aux3->next;
