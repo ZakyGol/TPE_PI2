@@ -19,12 +19,12 @@ htmlTable - Funciones auxiliares para la generación de tablas HTML (proveída p
 
 Compilación
 El proyecto se compila utilizando make.
-Para compilar ambas ciudades, escribiendo solamente make se compila para ambas (NYC y CHI)
+
 Para compilar la versión correspondiente a New York City:
-make nyc
+make CITY=NYC
 
 Para compilar la versión correspondiente a Chicago:
-make chicago
+make CITY=CHI
 
 Estos comandos generan los ejecutables:
 cityServicesNYC
