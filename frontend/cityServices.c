@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../backend/queries.h"
+
 #include "lector.h"
 #include "fromQueryToFile.h"
+#include "../backend/queries.h"
 #define YEAR_MIN_DEFAULT 1900
 #define YEAR_MAX_DEFAULT 2100
 int main(int argc, char *argv[]) {
