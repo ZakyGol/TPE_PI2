@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "queries.c"
-#include "lector.c"
-#include "fromQueryToFile.c"
+#include "../backend/queries.h"
+#include "lector.h"
+#include "fromQueryToFile.h"
 #define YEAR_MIN_DEFAULT 1900
 #define YEAR_MAX_DEFAULT 2100
 
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
                     "query4.csv","query4.html",
                     "query5.csv","query5.html")){
         fprintf(stderr,"Error al exportar los archivos\n");
-        freeQueries(q);
+        freeQueries(queries);
         freeTypes(types);
     }
     freeTypes(types);

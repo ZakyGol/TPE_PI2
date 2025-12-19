@@ -1,5 +1,6 @@
 #ifndef __FROM_QUERY_TO_FILE_H__
 #define __FROM_QUERY_TO_FILE_H__
+#include "../backend/queries.h"
 int queriesToFile(queryADT q, 
                 const char *csvFile1, const char *htmlFile1, 
                 const char *csvFile2, const char *htmlFile2, 

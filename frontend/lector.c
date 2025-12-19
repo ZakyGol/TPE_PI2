@@ -1,5 +1,5 @@
 #include "lector.h"
-#include "queries.h"
+#include "../backend/queries.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

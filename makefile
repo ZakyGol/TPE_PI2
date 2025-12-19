@@ -8,7 +8,7 @@ CHI = cityServicesCHI
 
 SRC = frontend/cityServices.c \
       frontend/lector.c \
-      frontend/fromQueryToFil.c \
+      frontend/fromQueryToFile.c \
       htmlTable.c \
       backend/queries.c
 

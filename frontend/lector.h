@@ -1,5 +1,6 @@
 #ifndef __LECTOR_H__
 #define __LECTOR_H__
+#include "../backend/queries.h"
 #define MAX_LINE 1024
 #define DELIMITER ";"
 #define BLOCK 250

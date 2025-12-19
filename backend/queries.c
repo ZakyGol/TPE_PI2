@@ -2,19 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include "queries.h"
-
-#if defined(CITY_NYC)
-#define CERRADO "Closed"
-#elif defined(CITY_CHICAGO)
-#define CERRADO "Completed"
-#else
-#error "Debe definirse CITY_NYC O CITY_CHICAGO"
-#endif
-
+typedef struct boroughTypes{
+    char *type;
+    unsigned int count;
+    struct boroughTypes *next;
+}*listBType;
 struct q1Node {
     char *borough;
-    char *name;
-    unsigned int count;
+    listBType firstType;
     struct q1Node *next;
 };
 struct q2Node {
@@ -22,37 +17,54 @@ struct q2Node {
     unsigned int count[HOURS];
     struct q2Node *next;
 };
-struct q3Node {
-    int quadLat;
+typedef struct latLongs{
     int quadLong;
     char **codes;
     size_t dim;
-    size_t esp;    
+    size_t size;
+    struct latLongs *next;
+}*listLatLongs;
+struct q3Node {
+    int quadLat;
+    listLatLongs firstLong;
     struct q3Node *next;
 };
+typedef struct agencyTypes{
+    char *type;
+    int recDay;
+    int oldDay;
+    struct agencyTypes *next;
+}*listAgTy;
+typedef struct boroughAg{
+    char * agency;
+    listAgTy firstType;
+    struct boroughAg *next;
+}*listBorAg;
 struct q4Node {
     char *borough;
-    char *agency;
-    char *name;
-    int oldDay;
-    int recDay;
+    listBorAg firstAgency;
     struct q4Node *next;
 };
+typedef struct quadYearMonth{
+    int month;
+    int recYTD;
+    struct quadYearMonth *next;
+}*listQuadYearMonth;
+typedef struct quadYear{
+    int year;
+    listQuadYearMonth firstMonth;
+    struct quadYear *next;
+}*listQuadYear;
+typedef struct latLongs5{
+    int quadLong;
+    listQuadYear firstYear;
+    struct latLongs5 *next;
+}*listLatLongs5;
 struct q5Node {
     int quadLat;
-    int quadLong;
-    int year;
-    int month;
-    unsigned int acc;
+    listLatLongs5 firstLong;
     struct q5Node *next;
 };
-
-typedef struct q1Node *q1List; 
-typedef struct q2Node *q2List; 
-typedef struct q3Node *q3List; 
-typedef struct q4Node *q4List; 
-typedef struct q5Node *q5List;
-
 struct queryCDT {
     q1List q1;
     q2List q2;
@@ -71,43 +83,31 @@ static int days_from_civil(int y, int m, int d) {
    int doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
    return era * 146097 + doe - 719468;
 }
-static int cmpQ1(const char *bor1, const char *name1, const char *bor2, const char *name2 ){
-    int c = strcmp(bor1,bor2);
-    if (c != 0)
-        return c;
-    return strcmp(name1, name2);
+static listBType addType(listBType lista, const char *type){
+    int c;
+    if(lista==NULL || (c=strcmp(lista->type,type))>0){
+        listBType new=malloc(sizeof(struct boroughTypes));
+        if(new==NULL) return lista;
+        new->type=strdup(type);
+        if(new->type==NULL){
+            free(new);
+            return lista;
+        }
+        new->count=1;
+        new->next=lista;
+        return new;
+    }
+    if(c==0){
+        (lista->count)++;
+        return lista;
+    }
+    lista->next=addType(lista->next,type);
+    return lista;
 }
-static int cmpQ3(int lat1, int lon1, int lat2, int lon2){
-    int c = lat1 - lat2;
-    if (c != 0)
-        return c;
-    return lon1 - lon2;
-}
-static int cmpQ4(const char *bor1, const char *ag1, const char *name1, const char *bor2, const char *ag2,const char *name2){
-    int c= strcmp(bor1,bor2);
-    if (c!=0)
-        return c;
-    c=strcmp(ag1,ag2);
-    if (c!=0)
-        return c;
-    return strcmp(name1,name2);
-}
-static int cmpQ5(int lat1, int lon1, int y1, int m1, int lat2, int lon2, int y2, int m2){
-    int c=lat1-lat2;
-    if(c!=0)
-        return c;
-    c=lon1-lon2;
-    if(c!=0)
-        return c;
-    c= y1-y2;
-    if(c!=0)
-        return c;
-    return m1-m2;
-}
-static q1List addToQ1(q1List q1, char * borough, char *name){ 
+static q1List addToQ1(q1List q1, const char * borough, const char *type){ 
     int c; 
-    if(q1==NULL || (c=cmpQ1(q1->borough,q1->name,borough,name))>0){
-        q1List new=malloc(sizeof(struct q1Node));
+    if(q1==NULL || (c=strcmp(q1->borough,borough))>0){
+        q1List new=calloc(1,sizeof(struct q1Node));
         if(new==NULL){
             return q1;
         }
@@ -116,24 +116,23 @@ static q1List addToQ1(q1List q1, char * borough, char *name){
             free(new);
             return q1;
         }
-        new->name=strdup(name);
-        if(new->name==NULL){
+        new->firstType=addType(new->firstType,type);
+        if(new->firstType==NULL){
             free(new->borough);
             free(new);
             return q1;
         }
-        new->count=1;
         new->next=q1;
         return new;
     }
     if(c==0){
-        (q1->count)++;
+        q1->firstType=addType(q1->firstType,type);
         return q1;
     }
-    q1->next=addToQ1(q1->next,borough, name);
+    q1->next=addToQ1(q1->next,borough, type);
     return q1;
 }
-static q2List addToQ2(q2List q2, char * borough, int hour){ 
+static q2List addToQ2(q2List q2, const char * borough, int hour){ 
     int c; 
     if(q2==NULL || (c=strcmp(q2->borough,borough))>0){
         q2List new=calloc(1,sizeof(struct q2Node));
@@ -156,189 +155,360 @@ static q2List addToQ2(q2List q2, char * borough, int hour){
     q2->next=addToQ2(q2->next,borough, hour);
     return q2;
 }
-static q3List addToQ3(q3List q3, int quadLat, int quadLong, char *code){ 
-    int c; 
-    if(q3==NULL || (c=cmpQ3(q3->quadLat,q3->quadLong,quadLat,quadLong))>0){
-        q3List new=malloc(sizeof(struct q3Node));
-        if(new==NULL){
-            return q3;
-        }
+static listLatLongs addLong(listLatLongs lista, int quadLong, const char *code){
+    int c;
+    if(lista==NULL || (c=lista->quadLong-quadLong)>0){
+        listLatLongs new=malloc(sizeof(struct latLongs));
+        if(new==NULL) return lista;
         new->codes=malloc(BLOQUE*sizeof(char*));
         if(new->codes==NULL){
             free(new);
-            return q3;
+            return lista;
         }
         new->codes[0]=strdup(code);
         if(new->codes[0]==NULL){
             free(new->codes);
             free(new);
+            return lista;
+        }
+        new->quadLong=quadLong;
+        new->next=lista;
+        new->size=BLOQUE;
+        new->dim=1;
+        return new;
+    }
+    if(c==0){
+        for(size_t i=0;i<lista->dim;i++){
+            if(strcmp(lista->codes[i],code)==0)
+                return lista;
+        }
+        if(lista->dim==lista->size){
+            char **tmp=realloc(lista->codes,(lista->size+BLOQUE)*sizeof(char*));
+            if(tmp==NULL)
+                return lista;
+            lista->codes=tmp;
+            lista->size+=BLOQUE;
+        }
+        lista->codes[lista->dim]=strdup(code);
+        if(lista->codes[lista->dim]==NULL){
+            return lista;
+        }
+        lista->dim++;
+        return lista;
+    }
+    lista->next=addLong(lista->next,quadLong,code);
+    return lista;
+}
+static q3List addToQ3(q3List q3, int quadLat, int quadLong, const char *code){ 
+    int c; 
+    if(q3==NULL || (c=q3->quadLat-quadLat)>0){
+        q3List new=calloc(1,sizeof(struct q3Node));
+        if(new==NULL){
+            return q3;
+        }
+        new->firstLong=addLong(new->firstLong,quadLong,code);
+        if(new->firstLong==NULL) {
+            free(new);
             return q3;
         }
         new->quadLat=quadLat;
-        new->quadLong=quadLong;
-        new->esp=BLOQUE;
-        new->dim=1;
         new->next=q3;
         return new;
     }
     if(c==0){
-        for(size_t i=0;i<q3->dim;i++){
-            if(strcmp(q3->codes[i],code)==0)
-                return q3;
-        }
-        if(q3->dim==q3->esp){
-            char **tmp=realloc(q3->codes,(q3->esp+BLOQUE)*sizeof(char*));
-            if(tmp==NULL)
-                return q3;
-            q3->codes=tmp;
-            q3->esp+=BLOQUE;
-        }
-        q3->codes[q3->dim]=strdup(code);
-        if(q3->codes[q3->dim]==NULL){
-            return q3;
-        }
-        q3->dim++;
+        q3->firstLong=addLong(q3->firstLong,quadLong,code);
         return q3;
     }
     q3->next=addToQ3(q3->next,quadLat,quadLong,code);
     return q3;
 }
-static q4List addToQ4(q4List q4, char *borough, char *agency, char *name, int date){ 
+static listAgTy addTypeToAg(listAgTy lista, const char *type, int date){
+    int c;
+    if(lista==NULL || (c=strcmp(lista->type,type))>0){
+        listAgTy new=malloc(sizeof(struct agencyTypes));
+        if(new==NULL) return lista;
+        new->type=strdup(type);
+        if(new->type==NULL){
+            free(new);
+            return lista;
+        }
+        new->oldDay=new->recDay=date;
+        new->next=lista;
+        return new;
+    }
+    if(c==0){
+        if(date>lista->recDay)
+            lista->recDay=date;
+        if(date<lista->oldDay)
+            lista->oldDay=date;
+        return lista;
+    }
+    lista->next=addTypeToAg(lista->next,type,date);
+    return lista;
+}
+static listBorAg addAgToB(listBorAg lista, const char *agency, const char *type, int date){
+    int c;
+    if(lista==NULL || (c=strcmp(lista->agency,agency))>0){
+        listBorAg new=calloc(1,sizeof(struct boroughAg));
+        if(new==NULL) return lista;
+        new->firstType=addTypeToAg(new->firstType,type,date);
+        if(new->firstType==NULL){
+            free(new);
+            return lista;
+        }
+        new->agency=strdup(agency);
+        if(new->agency==NULL){
+            free(new->firstType);
+            free(new);
+            return lista;
+        }
+        new->next=lista;
+        return new;
+    }
+    if(c==0){
+        lista->firstType=addTypeToAg(lista->firstType,type,date);
+        return lista;
+    }
+    lista->next=addAgToB(lista->next,agency,type,date);
+    return lista;
+}
+static q4List addToQ4(q4List q4, const char *borough, const char *agency, const char *type, int date){ 
     int c; 
-    if(q4==NULL || (c=cmpQ4(q4->borough,q4->agency,q4->name,borough,agency,name))>0){
-        q4List new=malloc(sizeof(struct q4Node));
+    if(q4==NULL || (c=strcmp(q4->borough,borough))>0){
+        q4List new=calloc(1,sizeof(struct q4Node));
         if(new==NULL){
             return q4;
         }
-        new->borough=strdup(borough);
-        new->agency=strdup(agency);
-        new->name=strdup(name);
-        if(new->borough==NULL || new->agency==NULL || new->name==NULL){
-            free(new->borough);
-            free(new->agency);
-            free(new->name);
+        new->firstAgency=addAgToB(new->firstAgency,agency,type,date);
+        if(new->firstAgency==NULL){
             free(new);
             return q4;
         }
-        new->oldDay=new->recDay=date;
+        new->borough=strdup(borough);
+        if(new->borough==NULL){
+            free(new->firstAgency);
+            free(new);
+            return q4;
+        }
         new->next=q4;
         return new;
     }
     if(c==0){
-        if(date>q4->recDay){
-            q4->recDay=date;
-        }
-        if(date<q4->oldDay){
-            q4->oldDay=date;
-        }
+        q4->firstAgency=addAgToB(q4->firstAgency,agency,type,date);
         return q4;
     }
-    q4->next=addToQ4(q4->next,borough,agency,name,date);
+    q4->next=addToQ4(q4->next,borough,agency,type,date);
     return q4;
+}
+
+static listQuadYearMonth addMonth(listQuadYearMonth lista, int month){
+    int c;
+    if(lista==NULL||(c=lista->month-month)>0){
+        listQuadYearMonth new=malloc(sizeof(struct quadYearMonth));
+        if(new==NULL) return lista;
+        new->month=month;
+        new->recYTD=1;
+        new->next=lista;
+        return new;
+    }
+    if(c==0){
+        lista->recYTD++;
+        return lista;
+    }
+    lista->next=addMonth(lista->next,month);
+    return lista;
+}
+static listQuadYear addYear(listQuadYear lista, int year, int month){
+    int c;
+    if(lista==NULL || (c=lista->year-year)>0){
+        listQuadYear new=calloc(1,sizeof(struct quadYear));
+        if(new==NULL) return lista;
+        new->firstMonth=addMonth(new->firstMonth,month);
+        new->year=year;
+        new->next=lista;
+        return new;
+    }
+    if(c==0){
+        lista->firstMonth=addMonth(lista->firstMonth,month);
+        return lista;
+    }
+    lista->next=addYear(lista->next,year,month);
+    return lista;
+}
+static listLatLongs5 addLong5(listLatLongs5 lista, int quadLong, int year, int month){
+    int c;
+    if(lista==NULL || (c=lista->quadLong-quadLong)>0){
+        listLatLongs5 new=calloc(1,sizeof(struct latLongs5));
+        if(new==NULL) return lista;
+        new->firstYear=addYear(new->firstYear,year,month);
+        if(new->firstYear==NULL){
+            free(new);
+            return lista;
+        }
+        new->quadLong=quadLong;
+        new->next=lista;
+        return new;
+    }
+    if(c==0){
+        lista->firstYear=addYear(lista->firstYear,year,month);
+        return lista;
+    }
+    lista->next=addLong5(lista->next,quadLong,year,month);
+    return lista;
 }
 static q5List addToQ5(q5List q5, int quadLat, int quadLong, int year, int month, int YTD){ 
     int c; 
-    if(q5==NULL || (c=cmpQ5(q5->quadLat,q5->quadLong,q5->year,q5->month,quadLat,quadLong,year,month))>0){
-        q5List new=malloc(sizeof(struct q5Node));
+    if(q5==NULL || (c=q5->quadLat-quadLat)>0){
+        q5List new=calloc(1,sizeof(struct q5Node));
         if(new==NULL){
             return q5;
         }
+        new->firstLong=addLong5(new->firstLong,quadLong,year,month);
+        if(new->firstLong==NULL){
+            free(new);
+            return q5;
+        }
         new->quadLat=quadLat;
-        new->quadLong=quadLong;
-        new->year=year;
-        new->month=month;
-        new->acc=YTD+1;
         new->next=q5;
         return new;
     }
     if(c==0){
-        (q5->acc)++;
+        q5->firstLong=addLong5(q5->firstLong,quadLong,year,month);
         return q5;
-    }
-    if(q5->quadLat==quadLat && q5->quadLong==quadLong && q5->year==year){
-        YTD=q5->acc;
     }
     q5->next=addToQ5(q5->next,quadLat,quadLong,year,month,YTD);
     return q5;
 }
-static void accQ5(q5List q5, int quadLat, int quadLong, int year, int month){ //actualiza los acc de los meses posteriores de ese mismo año(les suma 1)
-    while(q5!=NULL && (q5->quadLat!=quadLat || q5->quadLong!=quadLong || q5->year!=year || q5->month!=month))
-        q5=q5->next;
-    if(q5==NULL) return;
-    q5=q5->next;
-    while(q5!=NULL && q5->quadLat==quadLat && q5->quadLong==quadLong && q5->year==year){
-        (q5->acc)++;
-        q5=q5->next;
-    }
-}
-void addToQueries(queryADT q,const char * agency, const char * code, const char * name, const char * status, const char * borough, 
-                    int year, int month, int day, int hour, 
-                    int quadLat, int quadLong, int yMax, int yMin){
+
+void addToQueries(queryADT q,const char * agency, const char * code, const char * type, const char * status, const char * borough, int year, int month, int day, int hour, double lat, double lon, int yMax, int yMin){
+    if((lat>90 || lat<-90)|| (lon>180 || lon<-180)|| (hour>23 || hour<0) || (month<1 || month>12))
+        return; 
+    int quadLat,quadLong;
+    quadLat=(int)(lat*10);
+    quadLong=(int)(lon*10);
     int isClosed=strcmp(status,CERRADO)==0;
-    q->q1=addToQ1(q->q1,borough,name);
+    q->q1=addToQ1(q->q1,borough,type);
     if(isClosed){
         q->q2=addToQ2(q->q2,borough,hour);
     }
     if(strcmp(status,"Open")==0)
         q->q3=addToQ3(q->q3,quadLat,quadLong,code);
     if(year>yMin && year<yMax){
-        q->q4=addToQ4(q->q4,borough,agency,name,days_from_civil(year,month,day));
+        q->q4=addToQ4(q->q4,borough,agency,type,days_from_civil(year,month,day));
         if(isClosed){
             q->q5=addToQ5(q->q5,quadLat,quadLong,year,month,0);
-            accQ5(q->q5,quadLat,quadLong,year,month);
         }
     }
 }
-void freeQ1(q1List q1){
-    while(q1!=NULL){
-        q1List aux=q1;
-        q1=q1->next;
-        free(aux->borough);
-        free(aux->name);
-        free(aux);
+static void freeBTypes(listBType t){
+    while(t){
+        listBType aux = t->next;
+        free(t->type);
+        free(t);
+        t = aux;
     }
 }
-void freeQ2(q2List q2){
-    while(q2!=NULL){
-        q2List aux=q2;
-        q2=q2->next;
-        free(aux->borough);
-        free(aux);
+static void freeQ1(q1List q1){
+    while(q1){
+        q1List aux = q1->next;
+        free(q1->borough);
+        freeBTypes(q1->firstType);
+        free(q1);
+        q1 = aux;
     }
 }
-void freeQ3(q3List q3){
-    while(q3!=NULL){
-        q3List aux=q3;
-        q3=q3->next;
-        for(size_t i=0;i<aux->dim;i++){
-            free(aux->codes[i]);
-        }
-        free(aux->codes);
-        free(aux);
+static void freeQ2(q2List q2){
+    while(q2){
+        q2List aux = q2->next;
+        free(q2->borough);
+        free(q2);
+        q2 = aux;
     }
 }
-void freeQ4(q4List q4){
-    while(q4!=NULL){
-        q4List aux=q4;
-        q4=q4->next;
-        free(aux->borough);
-        free(aux->agency);
-        free(aux->name);
-        free(aux);
+static void freeLatLongs(listLatLongs l){
+    while(l){
+        listLatLongs aux = l->next;
+        for(size_t i = 0; i < l->dim; i++)
+            free(l->codes[i]);
+        free(l->codes);
+        free(l);
+        l = aux;
     }
 }
-void freeQ5(q5List q5){
-    while(q5!=NULL){
-        q5List aux=q5;
-        q5=q5->next;
-        free(aux);
+static void freeQ3(q3List q3){
+    while(q3){
+        q3List aux = q3->next;
+        freeLatLongs(q3->firstLong);
+        free(q3);
+        q3 = aux;
+    }
+}
+static void freeAgTypes(listAgTy t){
+    while(t){
+        listAgTy aux = t->next;
+        free(t->type);
+        free(t);
+        t = aux;
+    }
+}
+static void freeBorAg(listBorAg a){
+    while(a){
+        listBorAg aux = a->next;
+        free(a->agency);
+        freeAgTypes(a->firstType);
+        free(a);
+        a = aux;
+    }
+}
+static void freeQ4(q4List q4){
+    while(q4){
+        q4List aux = q4->next;
+        free(q4->borough);
+        freeBorAg(q4->firstAgency);
+        free(q4);
+        q4 = aux;
+    }
+}
+static void freeMonths(listQuadYearMonth m){
+    while(m){
+        listQuadYearMonth aux=m->next;
+        free(m);
+        m=aux;
+    }
+}
+static void freeYears(listQuadYear y){
+    while(y){
+        listQuadYear aux = y->next;
+        freeMonths(y->firstMonth);
+        free(y);
+        y = aux;
+    }
+}
+static void freeLongs5(listLatLongs5 l){
+    while(l){
+        listLatLongs5 aux = l->next;
+        freeYears(l->firstYear);
+        free(l);
+        l = aux;
+    }
+}
+static void freeQ5(q5List q5){
+    while(q5){
+        q5List aux = q5->next;
+        freeLongs5(q5->firstLong);
+        free(q5);
+        q5 = aux;
     }
 }
 void freeQueries(queryADT q){
+    if(q == NULL)
+        return;
+
     freeQ1(q->q1);
     freeQ2(q->q2);
     freeQ3(q->q3);
     freeQ4(q->q4);
     freeQ5(q->q5);
+
     free(q);
 }
