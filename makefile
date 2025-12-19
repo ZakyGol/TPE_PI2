@@ -10,11 +10,11 @@ else
 $(error Debe definir CITY=NYC o CITY=CHI)
 endif
 TARGET = cityServices$(CITY)
-SRC = ./front/cityServices.c \
-      ./front/lector.c \
-      ./back/queries.c \
-      ./front/fromQueryToFile.c \
-      ./back/htmlTable.c
+SRC = ./frontend/cityServices.c \
+      ./frontend/lector.c \
+      ./backend/queries.c \
+      ./frontend/fromQueryToFile.c \
+      ./backend/htmlTable.c
 
 OBJ = $(SRC:.c=.o)
 
