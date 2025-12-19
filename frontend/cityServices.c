@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "./back/queries.h"
-#include "./front/lector.h"
-#include "./front/fromQueryToFile.h"
+#include "../back/queries.h"
+#include "./lector.h"
+#include "./fromQueryToFile.h"
 #define YEAR_MIN_DEFAULT 1900
 #define YEAR_MAX_DEFAULT 2100
 int main(int argc, char *argv[]) {
