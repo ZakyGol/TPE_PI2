@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "queries2.h"
-
 typedef struct boroughTypes{
     char *type;
     unsigned int count;
@@ -66,13 +65,6 @@ struct q5Node {
     listLatLongs5 firstLong;
     struct q5Node *next;
 };
-
-typedef struct q1Node *q1List;
-typedef struct q2Node *q2List;
-typedef struct q3Node *q3List;
-typedef struct q4Node *q4List;
-typedef struct q5Node *q5List;
-
 struct queryCDT {
     q1List q1;
     q2List q2;
@@ -83,12 +75,6 @@ struct queryCDT {
 queryADT newQueries(void){
     return calloc(1,sizeof(struct queryCDT));
 }
-q1List getQ1(queryADT q){ return q ? q->q1 : NULL; }
-q2List getQ2(queryADT q){ return q ? q->q2 : NULL; }
-q3List getQ3(queryADT q){ return q ? q->q3 : NULL; }
-q4List getQ4(queryADT q){ return q ? q->q4 : NULL; }
-q5List getQ5(queryADT q){ return q ? q->q5 : NULL; }
-
 static int days_from_civil(int y, int m, int d) {
    y -= m <= 2;
    int era = (y >= 0 ? y : y - 399) / 400;
@@ -213,6 +199,13 @@ static listLatLongs addLong(listLatLongs lista, int quadLong, const char *code){
     lista->next=addLong(lista->next,quadLong,code);
     return lista;
 }
+
+q1List getQ1(queryADT q){ return q ? q->q1 : NULL; }
+q2List getQ2(queryADT q){ return q ? q->q2 : NULL; }
+q3List getQ3(queryADT q){ return q ? q->q3 : NULL; }
+q4List getQ4(queryADT q){ return q ? q->q4 : NULL; }
+q5List getQ5(queryADT q){ return q ? q->q5 : NULL; }
+
 static q3List addToQ3(q3List q3, int quadLat, int quadLong, const char *code){ 
     int c; 
     if(q3==NULL || (c=q3->quadLat-quadLat)>0){
@@ -394,7 +387,7 @@ static q5List addToQ5(q5List q5, int quadLat, int quadLong, int year, int month,
     return q5;
 }
 
-void addToQueries(queryADT q,const char * agency, const char * code, const char *name, const char * status, const char * borough, int year, int month, int day, int hour, double lat, double lon, int yMax, int yMin){
+void addToQueries(queryADT q,const char * agency, const char * code, const char * type, const char * status, const char * borough, int year, int month, int day, int hour, double lat, double lon, int yMax, int yMin){
     if((lat>90 || lat<-90)|| (lon>180 || lon<-180)|| (hour>23 || hour<0) || (month<1 || month>12))
         return; 
     int quadLat,quadLong;
