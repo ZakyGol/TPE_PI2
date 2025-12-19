@@ -10,12 +10,13 @@ Frontend - Contiene el código encargado de la lectura de archivos de entrada y 
 
 Backend
 queries - Implementación del backend. Maneja el almacenamiento de los reclamos y el cálculo de las consultas solicitadas.
+htmlTable - Funciones auxiliares para la generación de tablas HTML (proveída por la cátedra)
 
 Frontend
 main - Programa principal. Procesa los parámetros recibidos por línea de comandos y coordina la ejecución general.
 lector - Lectura y parseo de los archivos CSV de reclamos y tipos de reclamos.
 fromQueryToFile - Generación de archivos CSV y HTML a partir de los resultados de las consultas.
-htmlTable - Funciones auxiliares para la generación de tablas HTML (proveída por la cátedra)
+
 
 Compilación
 El proyecto se compila utilizando make.
