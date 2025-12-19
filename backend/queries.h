@@ -22,7 +22,7 @@ typedef void (*Q2Visitor)(const char *borough, int hour, unsigned int count, voi
 typedef void (*Q3Visitor)(int quadLat, int quadLong, unsigned int rec, void *userData);
 typedef void (*Q4Visitor)(const char *borough, const char *agency, const char *type, int daysBetween, void *userData);
 typedef void (*Q5Visitor)(int quadLat, int quadLong, int year, int month, int recYTD, void *userData);
-queryADT newQueries();
+queryADT newQueries(void);
 void addToQueries(queryADT q,const char * agency, const char * code, const char *name, const char * status, const char * borough, int year, int month, int day, int hour, double lat, double lon, int yMax, int yMin);
 void q1_foreach(queryADT q, Q1Visitor v, void *userData);
 void q2_foreach(queryADT q, Q2Visitor v, void *userData);

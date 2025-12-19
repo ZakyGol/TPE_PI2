@@ -31,7 +31,7 @@ $(CHI): $(OBJ_CHI)
 	$(CC) $(CFLAGS) -DCITY_NYC -c $< -o $@
 
 %.chi.o: %.c
-	$(CC) $(CFLAGS) -DCITY_CHICAGO -c $< -o $@
+	$(CC) $(CFLAGS) -DCITY_CHI -c $< -o $@
 
 clean:
 	rm -f $(NYC) $(CHI) $(OBJ_NYC) $(OBJ_CHI)
