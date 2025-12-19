@@ -46,6 +46,7 @@ struct q5Node {
     unsigned int acc;
     struct q5Node *next;
 };
+
 typedef struct q1Node *q1List; 
 typedef struct q2Node *q2List; 
 typedef struct q3Node *q3List; 
