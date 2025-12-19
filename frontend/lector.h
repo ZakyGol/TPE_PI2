@@ -1,12 +1,10 @@
 #ifndef __LECTOR_H__
 #define __LECTOR_H__
-#include "../backend/queries.h"
 #define MAX_LINE 1024
 #define DELIMITER ";"
 #define BLOCK 250
-
+#include "../back/queries.h"
 typedef struct typevectorCDT * typevector;
-
 // creo la estructura para almacenar los tipos de reclamo
 typevector newType(void);
 // leo del archivo filename los tipos de reclamo y los almacento en la estructura types
