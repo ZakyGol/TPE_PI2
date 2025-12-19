@@ -1,7 +1,7 @@
 #include "fromQueryToFile.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "../backend/queries.h"
+#include "../backend/queries.c"
 #include "../htmlTable.c"
 static int q1ToFile(q1List q1, const char *csvFile, const char *htmlFile){
     if (q1 == NULL){
