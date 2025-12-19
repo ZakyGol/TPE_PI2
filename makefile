@@ -15,11 +15,11 @@ SRC = frontend/cityServices.c \
 OBJ_NYC = $(SRC:.c=.nyc.o)
 OBJ_CHI = $(SRC:.c=.chi.o)
 
-all: nyc chicago
+all: nyc chi
 
 nyc: $(NYC)
 
-chicago: $(CHI)
+chi: $(CHI)
 
 $(NYC): $(OBJ_NYC)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
