@@ -16,7 +16,7 @@ typedef struct q3Node *q3List;
 typedef struct q4Node *q4List;
 typedef struct q5Node *q5List;
 typedef struct queryCDT * queryADT;
-typedef void (*Q1Visitor)(const char *borough,const char *type, unsigned int count,void *userData);
+typedef void (*Q1Visitor)(const char *borough,const char *type, unsigned int count,void *userData); //defino las funciones que despues se crean en el front
 typedef void (*Q2Visitor)(const char *borough, int hour, unsigned int count, void *userData);
 typedef void (*Q3Visitor)(int quadLat, int quadLong, unsigned int rec, void *userData);
 typedef void (*Q4Visitor)(const char *borough, const char *agency, const char *type, int daysBetween, void *userData);
